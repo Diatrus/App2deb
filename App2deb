@@ -2,13 +2,27 @@
 
 # App2deb v1. Used to correctly and automatically create deb files of tvOS or iOS apps that can be run from /Applications.
 
+#Check dependancies
+if ! type dpkg >/dev/null; then
+	echo "Please install dpkg."
+fi
+if ! type ldid2 >/dev/null; then
+	echo "Please install ldid2."
+fi
+if [ ! -d "$HOME/Documents/App2deb" ]; then
+	mkdir "$HOME/Documents/App2deb"
+fi	
+
+#Actual script
 FILENAME="$1"
 if [ -z "$1" ]; then
-	echo "Usage: ./App2deb [IPA]"
+	echo "Usage: App2deb [IPA]"
 else
 	if [ ! -f "$FILENAME" ]; then
 		echo "File not found!"
 	else
+		cp "$FILENAME" "$HOME/Documents/App2deb/$FILENAME"
+		cd "$HOME/Documents/App2deb"
 		find . -type d -exec rm -rf '{}' \;  2> /dev/null
 		echo "Extracting IPA"
 		unzip -qq "$FILENAME"
@@ -30,7 +44,7 @@ else
 		echo "Adding entitlements..."
 		touch entitlements.xml
 		echo -e "<?xml version="1.0" encoding="UTF-8"?>\n<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">\n<plist version="1.0">\n<dict>\n    <key>com.apple.private.security.no-container</key>\n    <true/>\n    <key>com.apple.private.skip-library-validation</key>\n    <true/>\n    <key>get-task-allow</key>\n    <true/>\n    <key>platform-application</key>\n    <true/>\n</dict>\n</plist>\n" > entitlements.xml
-		find "$APPDIR" -perm +111 -type f -not -name "*.html" -not -name "*.css" -not -name "*.js" -exec ./ldid2 -Sentitlements.xml {} \;
+		find "$APPDIR" -perm +111 -type f -not -name "*.html" -not -name "*.css" -not -name "*.js" -exec ldid2 -Sentitlements.xml {} \;
 		rm -f entitlements.xml
 		echo "Packaging deb..."
 		mkdir "$BUNDLEID"_"$VERSION"-"$BUILD"
@@ -49,7 +63,7 @@ else
 
 		elif [ "$PLATFORM" = "iphoneos" ]; then	
 			echo -e "Package: "$BUNDLEID"\nName: "$NAME"\nVersion: "$VERSION"."$BUILD"\nDepends: firmware (>= "$FIRMWARE")\nSection: Applications\nDescription: "$NAME" for iOS\nAuthor: "$AUTHOR"\nMaintainer: "$MAINTAINER"\nArchitecture: iphoneos-arm\n" > DEBIAN/control
-			echo "#!/bin/bash\nuicache" > DEBIAN/postinst
+			echo -e "#!/bin/bash\nuicache" > DEBIAN/postinst
 		else
 			echo "Invalid architecture!"
 		fi	
@@ -59,6 +73,8 @@ else
 		dpkg -b "$BUNDLEID"_"$VERSION"-"$BUILD" >/dev/null
 		echo "Cleanup..."
 		rm -rf "$BUNDLEID"_"$VERSION"-"$BUILD"
+		rm -f "$FILENAME"
 		echo "Done!"
+		echo "Output: "$HOME"/Documents/App2deb/"$BUNDLEID"_"$VERSION"-"$BUILD".deb"
 	fi	
 fi
