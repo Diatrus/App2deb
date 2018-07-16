@@ -1,0 +1,63 @@
+#!/bin/bash
+
+# App2deb v1. Used to correctly and automatically create deb files of tvOS or iOS apps that can be run from /Applications.
+
+FILENAME="$1"
+if [ -z "$1" ]; then
+	echo "Usage: ./App2deb [IPA]"
+else
+
+	if [ ! -f "$FILENAME" ]; then
+		echo "File not found!"
+	else
+		find . -type d -exec rm -rf '{}' \;  2> /dev/null
+		echo "Extracting IPA"
+		unzip -qq "$FILENAME"
+		rm -rf __MACOSX
+		cd Payload
+		APPDIR=$(find . -type d -name "*.app") 
+		cd ..
+		mv Payload/"$APPDIR" "$APPDIR"
+		rm -rf Payload
+		echo "Getting app version..."
+		VERSION=$(/usr/libexec/plistbuddy -c 'print CFBundleShortVersionString' ${APPDIR}/Info.plist)
+		BUILD=$(/usr/libexec/plistbuddy -c 'print CFBundleVersion' ${APPDIR}/Info.plist)
+		FIRMWARE=$(/usr/libexec/plistbuddy -c 'print MinimumOSVersion' ${APPDIR}/Info.plist)
+		BUNDLEID=$(/usr/libexec/plistbuddy -c 'print CFBundleIdentifier' ${APPDIR}/Info.plist)
+		NAME=$(/usr/libexec/plistbuddy -c 'print CFBundleName' ${APPDIR}/Info.plist)
+		PLATFORM=$(/usr/libexec/plistbuddy -c 'print DTPlatformName' ${APPDIR}/Info.plist)
+		BUNDLENAME=$(/usr/libexec/plistbuddy -c 'print CFBundleDisplayName' ${APPDIR}/Info.plist)
+		echo "$VERSION"-"$BUILD"
+		echo "Adding entitlements..."
+		touch entitlements.xml
+		echo -e "<?xml version="1.0" encoding="UTF-8"?>\n<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">\n<plist version="1.0">\n<dict>\n    <key>com.apple.private.security.no-container</key>\n    <true/>\n    <key>com.apple.private.skip-library-validation</key>\n    <true/>\n    <key>get-task-allow</key>\n    <true/>\n    <key>platform-application</key>\n    <true/>\n</dict>\n</plist>\n" > entitlements.xml
+		find "$APPDIR" -perm +111 -type f -not -name "*.html" -not -name "*.css" -not -name "*.js" -exec ./ldid2 -Sentitlements.xml {} \;
+		rm -f entitlements.xml
+		echo "Packaging deb..."
+		mkdir "$BUNDLEID"_"$VERSION"-"$BUILD"
+		cd "$BUNDLEID"_"$VERSION"-"$BUILD"
+		mkdir DEBIAN | mkdir Applications
+		cd ..
+		mv "$APPDIR" "$BUNDLEID"_"$VERSION"-"$BUILD"/Applications/"$APPDIR"
+		cd "$BUNDLEID"_"$VERSION"-"$BUILD"
+		touch DEBIAN/control
+		touch DEBIAN/postinst
+		if [ "$PLATFORM" = "appletvos" ]; then
+			echo -e "Package: "$BUNDLEID"\nName: "$NAME"\nVersion: "$VERSION"."$BUILD"\nPre-Depends: cy+cpu.arm64\nDepends: firmware (>= "$FIRMWARE"), mobilesubstrate\nSection: Applications\nDescription: "$NAME" for the Apple TV\nAuthor: "$BUNDLENAME"\nMaintainer: Diatrus\nArchitecture: appletvos-arm64\n" > DEBIAN/control
+			echo -e "#!/bin/bash\necho 'finish:restart'" > DEBIAN/postinst
+
+		elif [ "$PLATFORM" = "iphoneos" ]; then	
+			echo -e "Package: "$BUNDLEID"\nName: "$NAME"\nVersion: "$VERSION"."$BUILD"\nDepends: firmware (>= "$FIRMWARE")\nSection: Applications\nDescription: "$NAME" for iOS\nAuthor: "$BUNDLENAME"\nMaintainer: Diatrus\nArchitecture: iphoneos-arm\n" > DEBIAN/control
+			echo "#!/bin/bash\nuicache" > DEBIAN/postinst
+		else
+			echo "Invalid architecture!"
+		fi	
+		chmod 0755 DEBIAN/postinst
+		chmod 0755 DEBIAN/control
+		cd ..
+		dpkg -b "$BUNDLEID"_"$VERSION"-"$BUILD" >/dev/null
+		echo "Cleanup..."
+		rm -rf "$BUNDLEID"_"$VERSION"-"$BUILD"
+		echo "Done!"
+	fi	
+fi
