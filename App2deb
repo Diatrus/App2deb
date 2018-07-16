@@ -6,7 +6,6 @@ FILENAME="$1"
 if [ -z "$1" ]; then
 	echo "Usage: ./App2deb [IPA]"
 else
-
 	if [ ! -f "$FILENAME" ]; then
 		echo "File not found!"
 	else
