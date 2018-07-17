@@ -6,7 +6,7 @@ if ! type dpkg &>/dev/null; then
 		brew install dpkg
 	elif type port &>/dev/null; then
 		echo "Installing dpkg with MacPorts"
-		port install dpkg
+		sudo port install dpkg
 	else
 		echo "Installing Homebrew..."
 		/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
