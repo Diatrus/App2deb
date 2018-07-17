@@ -4,8 +4,8 @@ if [[ $EUID -ne 0 ]]; then
    exit 1
 fi
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
-curl --silent https://raw.githubusercontent.com/Diatrus/App2deb/master/Resources/App2deb?raw=true > App2deb
-curl --silent https://github.com/xerub/ldid/blob/master/ldid2?raw=true > ldid2
+curl --silent -LJO https://raw.githubusercontent.com/Diatrus/App2deb/master/Resources/App2deb > App2deb
+curl --silent -LJO https://github.com/xerub/ldid/raw/master/ldid2 > ldid2
 mv "$DIR/App2deb" "/usr/bin/App2deb" 
 mv "$DIR/ldid2" "/usr/bin/ldid2"
 chmod 0777 /usr/bin/App2deb
