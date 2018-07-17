@@ -1,13 +1,25 @@
 #!/bin/bash
-if [[ $EUID -ne 0 ]]; then
-   echo "This script must be run as root" 
-   exit 1
-fi
+#App2deb Install script v1.4
+if ! type dpkg &>/dev/null; then 
+	if type brew &>/dev/null; then
+		echo "Installing dpkg with Homebrew..."
+		brew install dpkg
+	elif type port &>/dev/null; then
+		echo "Installing dpkg with MacPorts"
+		port install dpkg
+	else
+		echo "Installing Homebrew..."
+		/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+		echo "Installing dpkg with Homebrew..." 
+		brew install dpkg
+	fi
+fi	
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
-curl --silent -LJO https://raw.githubusercontent.com/Diatrus/App2deb/master/Resources/App2deb > App2deb
-curl --silent -LJO https://github.com/xerub/ldid/raw/master/ldid2 > ldid2
-mv "$DIR/App2deb" "/usr/bin/App2deb" 
-mv "$DIR/ldid2" "/usr/bin/ldid2"
-chmod 0777 /usr/bin/App2deb
-chmod 0777 /usr/bin/ldid2
+curl --silent -LJO https://raw.githubusercontent.com/Diatrus/App2deb/master/Resources/App2deb > $DIR/App2deb
+curl --silent -LJO https://github.com/xerub/ldid/raw/master/ldid2 > $DIR/ldid2
+sudo mv "$DIR/App2deb" "/usr/bin/App2deb" 
+sudo mv "$DIR/ldid2" "/usr/bin/ldid2"
+sudo chmod 0777 /usr/bin/App2deb
+sudo chmod 0777 /usr/bin/ldid2
 echo "Success! App2deb can now be run anywhere!"
+echo "Run this script again anytime to update App2deb."

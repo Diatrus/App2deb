@@ -1,12 +1,12 @@
 #!/bin/bash
 
-# App2deb v1. Used to correctly and automatically create deb files of tvOS or iOS apps that can be run from /Applications.
+# App2deb. Used to correctly and automatically create deb files of tvOS or iOS apps that can be run from /Applications.
 
 #Check dependancies
-if ! type dpkg >/dev/null; then
+if ! type dpkg &>/dev/null; then
 	echo "Please install dpkg."
 fi
-if ! type ldid2 >/dev/null; then
+if ! type ldid2 &>/dev/null; then
 	echo "Please install ldid2."
 fi
 if [ ! -d "$HOME/Documents/App2deb" ]; then
