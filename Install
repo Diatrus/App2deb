@@ -1,11 +1,11 @@
 #!/bin/bash
-#App2deb Install script v1.4
+#App2deb Install script v1.5
 if ! type dpkg &>/dev/null; then 
 	if type brew &>/dev/null; then
 		echo "Installing dpkg with Homebrew..."
 		brew install dpkg
 	elif type port &>/dev/null; then
-		echo "Installing dpkg with MacPorts"
+		echo "Installing dpkg with MacPorts..."
 		sudo port install dpkg
 	else
 		echo "Installing Homebrew..."
