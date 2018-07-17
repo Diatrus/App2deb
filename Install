@@ -4,6 +4,10 @@ if [[ $EUID -ne 0 ]]; then
    exit 1
 fi
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
-cp "$DIR/App2deb" "/usr/bin/App2deb" 
-cp "$DIR/ldid2" "/usr/bin/ldid2"
+curl --silent https://raw.githubusercontent.com/Diatrus/App2deb/master/Resources/App2deb?raw=true > App2deb
+curl --silent https://github.com/xerub/ldid/blob/master/ldid2?raw=true > ldid2
+mv "$DIR/App2deb" "/usr/bin/App2deb" 
+mv "$DIR/ldid2" "/usr/bin/ldid2"
+chmod 0777 /usr/bin/App2deb
+chmod 0777 /usr/bin/ldid2
 echo "Success! App2deb can now be run anywhere!"

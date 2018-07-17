@@ -42,7 +42,7 @@ else
 		BUNDLENAME=$(/usr/libexec/plistbuddy -c 'print CFBundleDisplayName' ${APPDIR}/Info.plist)
 		echo "$VERSION"-"$BUILD"
 		echo "Downloading entitlements..."
-		curl --silent https://raw.githubusercontent.com/Diatrus/App2deb/master/entitlements.xml > entitlements.xml
+		curl --silent https://raw.githubusercontent.com/Diatrus/App2deb/master/Resources/entitlements.xml > entitlements.xml
 		echo "Adding entitlements..."
 		find "$APPDIR" -perm +111 -type f -not -name "*.html" -not -name "*.css" -not -name "*.js" -exec ldid2 -Sentitlements.xml {} \;
 		rm -f entitlements.xml
