@@ -34,6 +34,7 @@ else
 		rm -rf Payload
 		rm -rf "$APPDIR"/_CodeSignature &>/dev/null
 		rm -f "$APPDIR"/embedded.mobileprovision &>/dev/null
+		find . -name ".DS_Store" -depth -exec rm {} \;
 		echo "Getting app version..."
 		VERSION=$(/usr/libexec/plistbuddy -c 'print CFBundleShortVersionString' ${APPDIR}/Info.plist)
 		BUILD=$(/usr/libexec/plistbuddy -c 'print CFBundleVersion' ${APPDIR}/Info.plist)
