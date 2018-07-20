@@ -70,8 +70,11 @@ else
 		else
 			echo "Invalid architecture!"
 		fi	
+		echo "Make your manual edits to the control file and press any key to continue."
+		read -n 1 -s
 		chmod 0755 DEBIAN/postinst
 		chmod 0755 DEBIAN/control
+		find . -name ".DS_Store" -depth -exec rm {} \;
 		cd ..
 		dpkg -b "$BUNDLEID"_"$VERSION"-"$BUILD" >/dev/null
 		echo "Cleanup..."
