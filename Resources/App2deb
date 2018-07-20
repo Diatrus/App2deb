@@ -61,7 +61,7 @@ else
 		read -p 'Author of Package: ' AUTHOR
 		read -p 'Maintainer of Package: ' MAINTAINER
 		if [ "$PLATFORM" = "appletvos" ]; then
-			echo -e "Package: "$BUNDLEID"\nName: "$NAME"\nVersion: "$VERSION"-"$BUILD"\nPre-Depends: cy+cpu.arm64\nDepends: firmware (>= "$FIRMWARE"), mobilesubstrate\nSection: Applications\nDescription: "$NAME" for the Apple TV\nAuthor: "$AUTHOR"\nMaintainer: "$MAINTAINER"\nArchitecture: appletvos-arm64\n" > DEBIAN/control
+			echo -e "Package: "$BUNDLEID"\nName: "$NAME"\nVersion: "$VERSION"-"$BUILD"\nPre-Depends: cy+cpu.arm64\nDepends: firmware (>= "$FIRMWARE"), mobilesubstrate\nSection: Applications\nPriority: Extra\nDescription: "$NAME" for the Apple TV\nAuthor: "$AUTHOR"\nMaintainer: "$MAINTAINER"\nArchitecture: appletvos-arm64\n" > DEBIAN/control
 			echo -e "#!/bin/bash\necho 'finish:restart'" > DEBIAN/postinst
 
 		elif [ "$PLATFORM" = "iphoneos" ]; then	
