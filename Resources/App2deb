@@ -30,6 +30,7 @@ else
 		cd Payload
 		APPDIR=$(find . -type d -name "*.app") 
 		cd ..
+		chmod -R +x Payload
 		mv Payload/"$APPDIR" "$APPDIR"
 		rm -rf Payload
 		rm -rf "$APPDIR"/_CodeSignature &>/dev/null
@@ -47,7 +48,7 @@ else
 		echo "Downloading entitlements..."
 		curl --silent https://raw.githubusercontent.com/Diatrus/App2deb/master/Resources/entitlements.xml > entitlements.xml
 		echo "Adding entitlements..."
-		find "$APPDIR" -perm +111 -type f -not -name "*.html" -not -name "*.css" -not -name "*.js" -exec ldid2 -Sentitlements.xml {} \;
+		find "$APPDIR" -perm +111 -type f -not -name "*.html" -not -name "*.css" -not -name "*.js" -exec ldid2 -Sentitlements.xml {} &>/dev/null \;
 		rm -f entitlements.xml
 		echo "Packaging deb..."
 		mkdir "$BUNDLEID"_"$VERSION"-"$BUILD"
