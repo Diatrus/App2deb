@@ -1,5 +1,7 @@
 #!/bin/bash
-#App2deb Install script v1.5
+#App2deb Install script v1.6
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
+cd "$DIR"
 if ! type dpkg &>/dev/null; then 
 	if type brew &>/dev/null; then
 		echo "Installing dpkg with Homebrew..."
@@ -8,19 +10,23 @@ if ! type dpkg &>/dev/null; then
 		echo "Installing dpkg with MacPorts..."
 		sudo port install dpkg
 	else
-		echo "Installing Homebrew..."
-		/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
-		echo "Installing dpkg with Homebrew..." 
-		brew install dpkg
+		echo "Installing Mac APT..."
+		curl --silent -LJO https://sernarepo.com/MacPT.pkg > MacPT.pkg
+		sudo installer -pkg ./MacPT.pkg -target /
+		rm -f MacPT.pkg
 	fi
-fi	
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
-cd "$DIR"
+fi
+if ! type ldid &>/dev/null; then
+	if type apt &>/dev/null; then
+		echo "Installing ldid with Mac APT..."
+		sudo apt install ldid
+	else
+	curl --silent -LJO https://github.com/xerub/ldid/raw/master/ldid2 > ldid
+	sudo mv "ldid" "/usr/local/bin/ldid"
+	sudo chmod 0755 /usr/local/bin/ldid
+fi
 curl --silent -LJO https://raw.githubusercontent.com/Diatrus/App2deb/master/Resources/App2deb > App2deb
-curl --silent -LJO https://github.com/xerub/ldid/raw/master/ldid2 > ldid2
-sudo mv "App2deb" "/usr/bin/App2deb" 
-sudo mv "ldid2" "/usr/bin/ldid2"
-sudo chmod 0777 /usr/bin/App2deb
-sudo chmod 0777 /usr/bin/ldid2
+sudo mv "App2deb" "/usr/local/bin/App2deb"
+sudo chmod 0755 /usr/local/bin/App2deb
 echo "Success! App2deb can now be run anywhere!"
 echo "Run this script again anytime to update App2deb."
