@@ -6,8 +6,8 @@
 if ! type dpkg &>/dev/null; then
 	echo "Please install dpkg."
 fi
-if ! type ldid2 &>/dev/null; then
-	echo "Please install ldid2."
+if ! type ldid &>/dev/null; then
+	echo "Please install ldid."
 fi
 if [ ! -d "$HOME/Documents/App2deb" ]; then
 	mkdir "$HOME/Documents/App2deb"
@@ -48,7 +48,7 @@ else
 		echo "Downloading entitlements..."
 		curl --silent https://raw.githubusercontent.com/Diatrus/App2deb/master/Resources/entitlements.xml > entitlements.xml
 		echo "Adding entitlements..."
-		find "$APPDIR" -perm +111 -type f -not -name "*.html" -not -name "*.css" -not -name "*.js" -exec ldid2 -Sentitlements.xml {} &>/dev/null \;
+		find "$APPDIR" -perm +111 -type f -not -name "*.html" -not -name "*.css" -not -name "*.js" -exec ldid -Sentitlements.xml {} &>/dev/null \;
 		rm -f entitlements.xml
 		echo "Packaging deb..."
 		mkdir "$BUNDLEID"_"$VERSION"-"$BUILD"
