@@ -24,6 +24,7 @@ if ! type ldid &>/dev/null; then
 	curl --silent -LJO https://github.com/xerub/ldid/raw/master/ldid2 > ldid
 	sudo mv "ldid" "/usr/local/bin/ldid"
 	sudo chmod 0755 /usr/local/bin/ldid
+	fi
 fi
 curl --silent -LJO https://raw.githubusercontent.com/Diatrus/App2deb/master/Resources/App2deb > App2deb
 sudo mv "App2deb" "/usr/local/bin/App2deb"
